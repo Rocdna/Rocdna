@@ -1,0 +1,40 @@
+name: Refresh Profile
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 20 * * *' # 每天北京时间 04:17
+permissions:
+  contents: write
+concurrency:
+  group: profile-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate snake
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3
+        continue-on-error: true
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          outputs: |
+            assets/github-snake.svg?color_snake=#eda2cd&color_dots=#272a40,#64519a,#8e68bd,#bd80cc,#eda2cd
+      - name: Refresh stats and contribution city
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROFILE_USER: ${{ github.repository_owner }}
+        run: python scripts/refresh_profile.py
+      - name: Save updated profile assets
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets profile-3d-contrib README.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: refresh GitHub profile assets'
+            git push
+          fi
