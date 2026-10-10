@@ -46,7 +46,7 @@
 </p>
 
 <!-- SNAKE:START -->
-<!-- Snake 动画在第一次运行 Refresh Profile 工作流成功后自动显示。 -->
+<p align="center"><img src="./assets/github-snake.svg" width="900" alt="贪吃蛇贡献动画" /></p>
 <!-- SNAKE:END -->
 
 ### ✨ Wallpaper corner
