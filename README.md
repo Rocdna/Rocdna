@@ -24,13 +24,27 @@
   <img src="./assets/stack.svg" width="900" alt="Python, PyTorch, TypeScript, Next.js, Vue, FastAPI, Git" />
 </p>
 
-### 🚀 Selected projects
+### 🚀 Public projects
 
+<!-- PROJECTS:START -->
 <p align="center">
-  <a href="https://github.com/Rocdna/mini-agent"><img src="./assets/project-agent.svg" width="410" alt="Mini-Agent：ReAct、RAG、长期记忆和上下文管理" /></a>
-  <a href="https://github.com/Rocdna/rag-assistant"><img src="./assets/project-rag.svg" width="410" alt="RAG Assistant：混合检索、HyDE 和文档引用" /></a>
-  <a href="https://github.com/Rocdna/transformer_learn"><img src="./assets/project-transformer.svg" width="410" alt="Transformer Learn：手写模型、训练与 KV cache" /></a>
+  <a href="https://github.com/Rocdna/multi-agent-science-papers"><img src="./assets/projects/repo-1416394252.svg" width="410" alt="multi-agent-science-papers" /></a>
+  <a href="https://github.com/Rocdna/mini-agent"><img src="./assets/projects/repo-1411725076.svg" width="410" alt="mini-agent" /></a>
+  <a href="https://github.com/Rocdna/transformer_learn"><img src="./assets/projects/repo-1348351316.svg" width="410" alt="transformer_learn" /></a>
+  <a href="https://github.com/Rocdna/rag-assistant"><img src="./assets/projects/repo-1214195268.svg" width="410" alt="rag-assistant" /></a>
+  <a href="https://github.com/Rocdna/chatbot"><img src="./assets/projects/repo-1199589486.svg" width="410" alt="chatbot" /></a>
+  <a href="https://github.com/Rocdna/ml-notes"><img src="./assets/projects/repo-1180764799.svg" width="410" alt="ml-notes" /></a>
+  <a href="https://github.com/Rocdna/item"><img src="./assets/projects/repo-1125306813.svg" width="410" alt="item" /></a>
+  <a href="https://github.com/Rocdna/graduation-project"><img src="./assets/projects/repo-940995884.svg" width="410" alt="graduation-project" /></a>
+  <a href="https://github.com/Rocdna/pvz-base-on-c"><img src="./assets/projects/repo-752587926.svg" width="410" alt="pvz-base-on-c" /></a>
+  <a href="https://github.com/Rocdna/next-dashboard-first"><img src="./assets/projects/repo-711039012.svg" width="410" alt="next-dashboard-first" /></a>
+  <a href="https://github.com/Rocdna/wordcloud"><img src="./assets/projects/repo-687796213.svg" width="410" alt="wordcloud" /></a>
+  <a href="https://github.com/Rocdna/coolApp"><img src="./assets/projects/repo-651529624.svg" width="410" alt="coolApp" /></a>
+  <a href="https://github.com/Rocdna/blog"><img src="./assets/projects/repo-534875513.svg" width="410" alt="blog" /></a>
+  <a href="https://github.com/Rocdna/rocale.github.io"><img src="./assets/projects/repo-534871222.svg" width="410" alt="rocale.github.io" /></a>
+  <a href="https://github.com/Rocdna/Hello"><img src="./assets/projects/repo-432583373.svg" width="410" alt="Hello" /></a>
 </p>
+<!-- PROJECTS:END -->
 
 ### 📊 GitHub snapshot
 

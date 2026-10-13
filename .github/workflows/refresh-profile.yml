@@ -1,8 +1,10 @@
 name: Refresh Profile
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [refresh-profile]
   schedule:
-    - cron: '17 20 * * *' # 每天北京时间 04:17
+    - cron: '17 20 * * *' # 每天北京时间 04:17；GitHub 调度可能延迟
 permissions:
   contents: write
 concurrency:

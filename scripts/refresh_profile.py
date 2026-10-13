@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 from html import escape
 from datetime import date,datetime,timezone
 from collections import Counter
-import json,os,re,urllib.request
+import json,os,re,urllib.request,unicodedata
 ROOT=Path(__file__).resolve().parents[1]
 USER=os.environ.get('PROFILE_USER','Rocdna')
 TOKEN=os.environ.get('GITHUB_TOKEN','')
@@ -89,20 +89,66 @@ def stats(repos,days,total):
         b+=text(28+i*170,118,f'{lang} · {n}',14,palette[i%len(palette)])
     write('assets/languages.svg',svg(900,145,'Repository primary language distribution',b))
 
-def project_cards():
-    entries=[('agent','01 / AGENT SYSTEM','Mini-Agent','工具调用 · RAG · 长期记忆','ReAct 循环与上下文管理','Python / ReAct / Memory'),('rag','02 / KNOWLEDGE ENGINE','RAG Assistant','混合检索 · HyDE · 文档引用','让回答有据可循','Next.js / RRF / Pinecone'),('transformer','03 / MODEL FROM SCRATCH','Transformer Learn','手写注意力 · 训练 · 增量推理','把原理变成能够运行的模型','PyTorch / Attention / KV Cache')]
-    for key,label,title,a,b,tags in entries:
-        body=text(22,30,label,12,'#a78bfa',600)+text(22,73,title,25,weight=600)+text(22,110,a,14,'#cbc1dc')+text(22,134,b,14,'#cbc1dc')+text(22,181,tags,12,'#eda2cd')
-        write(f'assets/project-{key}.svg',svg(410,207,title,body))
+def wrap_text(value,width,max_lines):
+    lines=[];line='';size=0
+    for char in ' '.join(value.split()):
+        units=2 if unicodedata.east_asian_width(char) in ('W','F') else 1
+        if size+units>width:
+            lines.append(line);line='';size=0
+        line+=char;size+=units
+    if line:lines.append(line)
+    if len(lines)>max_lines:
+        lines=lines[:max_lines];lines[-1]=lines[-1][:-1]+'…'
+    return lines
+
+def replace_section(source,name,content):
+    start=f'<!-- {name}:START -->';end=f'<!-- {name}:END -->'
+    if source.count(start)!=1 or source.count(end)!=1 or source.index(start)>source.index(end):
+        raise RuntimeError(f'Expected one ordered {name} marker pair in README.md')
+    before,remainder=source.split(start,1);_,after=remainder.split(end,1)
+    return before+start+'\n'+content+'\n'+end+after
+
+def project_cards(repos):
+    readme=ROOT/'README.md'
+    source=readme.read_text(encoding='utf-8')
+    projects=sorted((r for r in repos if not r['fork'] and not r.get('private',False)
+                     and r['name'].casefold()!=USER.casefold()),
+                    key=lambda r:(r['created_at'],r['id']),reverse=True)
+    links=[];generated={}
+    for i,repo in enumerate(projects,1):
+        title=repo['name'];filename=f"repo-{repo['id']}.svg"
+        body=text(22,30,f'{i:02d} / PUBLIC PROJECT',12,'#a78bfa',600)
+        for row,line in enumerate(wrap_text(title,28,2)):
+            body+=text(22,65+row*25,line,22,weight=600)
+        description=repo.get('description') or '暂无项目描述'
+        for row,line in enumerate(wrap_text(description,48,3)):
+            body+=text(22,119+row*20,line,14,'#cbc1dc')
+        tags=f"{repo.get('language') or '未设置语言'} · Stars {repo['stargazers_count']}"
+        if repo.get('archived'):tags+=' · Archived'
+        body+=text(22,195,tags,12,'#eda2cd')
+        generated[filename]=svg(410,220,title+' — '+description,body)
+        links.append(f'  <a href="{escape(repo["html_url"],quote=True)}"><img src="./assets/projects/{filename}" width="410" alt="{escape(title,quote=True)}" /></a>')
+    content='<p align="center">\n'+'\n'.join(links)+'\n</p>' if links else '<p align="center">暂无公开原创项目。</p>'
+    updated=replace_section(source,'PROJECTS',content)
+    for filename,card in generated.items():write('assets/projects/'+filename,card)
+    readme.write_text(updated,encoding='utf-8')
+    directory=ROOT/'assets/projects'
+    if directory.exists():
+        for old in directory.glob('repo-*.svg'):
+            if old.name not in generated:old.unlink()
 
 if __name__=='__main__':
     days,total=calendar();repos=[]
-    for page in range(1,11):
+    page=1
+    while True:
         batch=json.loads(request(f'https://api.github.com/users/{USER}/repos?per_page=100&page={page}'))
         repos+=batch
         if len(batch)<100:break
-    city(days,total);stats(repos,days,total);project_cards()
+        page+=1
+    city(days,total);stats(repos,days,total);project_cards(repos)
     readme=ROOT/'README.md'
     if readme.exists() and (ROOT/'assets/github-snake.svg').exists():
-        s=readme.read_text();s=s.replace('<!-- SNAKE:START -->'+s.split('<!-- SNAKE:START -->')[1].split('<!-- SNAKE:END -->')[0]+'<!-- SNAKE:END -->','<!-- SNAKE:START -->\n<p align="center"><img src="./assets/github-snake.svg" width="900" alt="贪吃蛇贡献动画" /></p>\n<!-- SNAKE:END -->');readme.write_text(s)
+        s=readme.read_text(encoding='utf-8')
+        s=replace_section(s,'SNAKE','<p align="center"><img src="./assets/github-snake.svg" width="900" alt="贪吃蛇贡献动画" /></p>')
+        readme.write_text(s,encoding='utf-8')
     print(f'Generated {len(days)} contribution days; {total} contributions; {len(repos)} public repositories.')

@@ -21,10 +21,14 @@ git push
 如果仓库已经在本地，进入现有目录后先 git pull，再复制文件并提交。
 如果仓库尚未初始化，也可以在 GitHub 的 Add file → Upload files 上传。网页提交无法添加工作流时，用本地 Git 提交。
 
-## 2. 运行每日更新
+## 2. 运行自动更新
 
 Actions → Refresh Profile → Run workflow。
-首次运行成功后，README 会自动加入贪吃蛇动画。之后每天北京时间 04:17 更新；定时任务可能延迟。
+首次运行成功后，README 会自动加入贪吃蛇动画并重新生成项目卡片。之后每天北京时间 04:17 更新；GitHub 定时任务可能延迟，因此这属于定时自动更新，不能保证实时。
+项目卡片展示全部非 Fork 公开仓库（排除主页仓库本身），按创建时间从新到旧排列。新建仓库会在下一次成功刷新后加入；删除、转为私有的仓库会移除。名称、描述、主语言和 Stars 均来自 GitHub API。
+手动运行工作流可以提前刷新，无需等待下一次定时任务。
+
+工作流也支持 `repository_dispatch`，事件类型为 `refresh-profile`。如果之后配置能够接收仓库创建事件的 GitHub App / 外部服务，可由它调用 `POST /repos/Rocdna/Rocdna/dispatches`，请求体为 `{"event_type":"refresh-profile"}`，触发更新。外部调用需要有目标仓库访问权限和 Contents 写入权限的令牌。当前项目未部署这个事件服务，仅添加了触发入口；卡片仍需等待工作流执行和 GitHub 图片缓存刷新。
 不需要手动创建 Personal Access Token，工作流使用 GitHub 自动提供的 GITHUB_TOKEN。
 
 若 push 因权限设置失败：Settings → Actions → General → Workflow permissions 检查仓库或组织是否允许 Read and write permissions。不要修改其他项目权限。
@@ -72,7 +76,7 @@ README 目前包含原创动漫横幅，以及链接到原作品页的芙莉莲 
 - assets/：封面、技术栈、项目卡片、真实统计。
 - profile-3d-contrib/profile-customize.svg：根据真实公开贡献记录绘制的 3D 贡献图。
 - scripts/refresh_profile.py：更新贡献图与统计；只使用 Python 标准库。
-- .github/workflows/refresh-profile.yml：每日自动更新。
+- .github/workflows/refresh-profile.yml：每天自动更新，支持手动和外部事件触发。
 
 统计口径：Stars 为公开仓库当前获星总数；主语言分布按非 Fork 公开仓库计数；贡献和活跃天数来自过去一年的公开贡献日历。没有添加假的排名、熟练度或项目成果。
 
